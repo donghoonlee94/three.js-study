@@ -8,7 +8,7 @@ import * as THREE from 'three';
 export default function example() {
   // 미리 만든 Canvas에 삽입
   const canvas = document.querySelector('#three-canvas');
-  const renderer = new THREE.WebGL1Renderer({ canvas, antialias: true });
+  const renderer = new THREE.WebGL1Renderer({ canvas, antialias: true, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   // 사용하는 화면의 비율
@@ -16,8 +16,18 @@ export default function example() {
   // 화면의 비율에 맞게 스케일을 조정해줌.
   renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1);
 
+  // 투명도 조절
+  // renderer.setClearAlpha(0.5);
+
+  // 배경색 설정, css의 백그라운드 색상이랑도 연관됨.
+  // renderer.setClearColor(0x00ff00);
+  renderer.setClearColor('#00ff00');
+  renderer.setClearAlpha(0.5);
+
   // 무대
   const scene = new THREE.Scene();
+  // 색상을 바꾸는거지만 scene의 색상을 직접 설정할 경우 renderer 색상은 영향이 업어짐. 투명도 설정은 setClearColor, setClearAlpha 사용해야함.
+  scene.background = new THREE.Color(0x0000ff);
 
   // fov : 시야각, aspect : 종횡비, near : 카메라 앞까지의 거리, far: 카메라에 보이지 않는 거리. naer와 far 사이, 시야각에 보이는 객체만 보임.
   // 원근 카메라
