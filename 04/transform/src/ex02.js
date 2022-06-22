@@ -55,7 +55,8 @@ export default function example() {
   function draw() {
     const delta = clock.getDelta();
 
-    mesh.position.set(-1, 2, -5);
+    mesh.scale.x = 2;
+    mesh.scale.y = 0.5;
 
     renderer.render(scene, camera);
     renderer.setAnimationLoop(draw);
