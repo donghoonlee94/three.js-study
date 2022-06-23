@@ -41,13 +41,36 @@ export default function example() {
   const mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
 
-  console.log(geometry.attributes.position.array);
+  const positionArray = geometry.attributes.position.array;
+  const randomArray = [];
+
+  for (let i = 0; i < positionArray.length; i += 3) {
+    // 장점 한개의 좌표를 랜덤으로 조정
+    positionArray[i] += (Math.random() - 0.5) * 0.2;
+    positionArray[i + 1] += (Math.random() - 0.5) * 0.2;
+    positionArray[i + 2] += (Math.random() - 0.5) * 0.2;
+
+    randomArray[i] = (Math.random() - 0.5) * 0.2;
+    randomArray[i + 1] = (Math.random() - 0.5) * 0.2;
+    randomArray[i + 2] = (Math.random() - 0.5) * 0.2;
+  }
 
   // 그리기
   const clock = new THREE.Clock();
 
   function draw() {
-    const delta = clock.getDelta();
+    // const delta = clock.getDelta();
+    const time = clock.getElapsedTime() * 3;
+
+    for (let i = 0; i < positionArray.length; i += 3) {
+      // 장점 한개의 좌표를 랜덤으로 조정
+      positionArray[i] += Math.sin(time + randomArray[i] * 30) * 0.002;
+      positionArray[i + 1] += Math.sin(time + randomArray[i + 1] * 30) * 0.002;
+      positionArray[i + 2] += Math.sin(time + randomArray[i + 2] * 30) * 0.002;
+    }
+
+    // 변화를 인식시켜주려면 업데이트를 해줘야함.
+    geometry.attributes.position.needsUpdate = true;
 
     renderer.render(scene, camera);
     renderer.setAnimationLoop(draw);
