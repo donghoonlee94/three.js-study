@@ -63,25 +63,25 @@ export default function example() {
 
     boxMesh.position.y = Math.sin(time) * 2;
     torusMesh.position.y = Math.cos(time) * 2;
-    boxMesh.material.color.set('plum');
-    torusMesh.material.color.set('lime');
 
     renderer.render(scene, camera);
     renderer.setAnimationLoop(draw);
   }
 
   function checkIntersects() {
+    if (mouseMoved) return;
     raycaster.setFromCamera(mouse, camera);
 
     const intersects = raycaster.intersectObjects(meshes);
-    // for (const item of intersects) {
-    //   console.log(item.object.name);
-    //   break;
-    // }
-
-    if (intersects[0]) {
-      console.log(intersects[0]?.object?.name);
+    for (const item of intersects) {
+      console.log(item.object.name);
+      item.object.material.color.set('red');
+      break;
     }
+
+    // if (intersects[0]) {
+    //   console.log(intersects[0]?.object?.name);
+    // }
   }
 
   function setSize() {
@@ -99,6 +99,30 @@ export default function example() {
     mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
     checkIntersects();
+  });
+  // 드래그 방지 이벤트
+  let mouseMoved;
+  let clickStaryX;
+  let clickStaryY;
+  let clickStartTime; // 클릭이 유지된 시간
+
+  canvas.addEventListener('mousedown', (e) => {
+    clickStaryX = e.clientX;
+    clickStaryY = e.clientY;
+    clickStartTime = Date.now();
+  });
+
+  canvas.addEventListener('mouseup', (e) => {
+    const xGap = Math.abs(e.clientX - clickStaryX);
+    const yGap = Math.abs(e.clientY - clickStaryY);
+    const timeGap = Date.now() - clickStartTime;
+    console.log(timeGap);
+
+    if (xGap > 5 || yGap > 5 || timeGap > 500) {
+      mouseMoved = true;
+    } else {
+      mouseMoved = false;
+    }
   });
 
   draw();
