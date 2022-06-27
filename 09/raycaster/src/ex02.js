@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { Vector2 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { PreventDragClick } from './PreventDragClick';
 
 // ----- 주제: RayCaster
 
@@ -69,7 +69,7 @@ export default function example() {
   }
 
   function checkIntersects() {
-    if (mouseMoved) return;
+    if (preventDragClick.mouseMoved) return;
     raycaster.setFromCamera(mouse, camera);
 
     const intersects = raycaster.intersectObjects(meshes);
@@ -100,30 +100,8 @@ export default function example() {
     mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
     checkIntersects();
   });
-  // 드래그 방지 이벤트
-  let mouseMoved;
-  let clickStaryX;
-  let clickStaryY;
-  let clickStartTime; // 클릭이 유지된 시간
 
-  canvas.addEventListener('mousedown', (e) => {
-    clickStaryX = e.clientX;
-    clickStaryY = e.clientY;
-    clickStartTime = Date.now();
-  });
-
-  canvas.addEventListener('mouseup', (e) => {
-    const xGap = Math.abs(e.clientX - clickStaryX);
-    const yGap = Math.abs(e.clientY - clickStaryY);
-    const timeGap = Date.now() - clickStartTime;
-    console.log(timeGap);
-
-    if (xGap > 5 || yGap > 5 || timeGap > 500) {
-      mouseMoved = true;
-    } else {
-      mouseMoved = false;
-    }
-  });
+  const preventDragClick = new PreventDragClick(canvas);
 
   draw();
 }
