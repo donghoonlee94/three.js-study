@@ -34,13 +34,21 @@ export default function example() {
 
   // Controls
   const controls = new OrbitControls(camera, renderer.domElement);
+  let mixer;
 
   // gltf loader
   const gltfLoader = new GLTFLoader();
   gltfLoader.load('./models/ilbuni.glb', (gltf) => {
-    console.log(gltf.scene.children[0]);
     const ilbuniMesh = gltf.scene.children[0];
     scene.add(ilbuniMesh);
+
+    mixer = new THREE.AnimationMixer(ilbuniMesh);
+    const actions = [];
+    actions[0] = mixer.clipAction(gltf.animations[0]);
+    actions[1] = mixer.clipAction(gltf.animations[1]);
+    actions[0].repetitions = 1;
+    actions[0].clampWhenFinished = true;
+    actions[0].play();
   });
 
   // 그리기
@@ -48,6 +56,8 @@ export default function example() {
 
   function draw() {
     const delta = clock.getDelta();
+
+    if (mixer) mixer.update(delta);
 
     renderer.render(scene, camera);
     renderer.setAnimationLoop(draw);
