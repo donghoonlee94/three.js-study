@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { ImagePanel } from './ImagePanel';
+import gsap from 'gsap';
 
 // ----- 주제: Point 좌표에 Mesh 생성하기
 
@@ -46,12 +47,14 @@ export default function example() {
   const spherePositionArray = sphereGeometry.attributes.position.array;
   const randomPositionArray = [];
 
-  for (let i; i < spherePositionArray.length; i++) {
+  for (let i = 0; i < spherePositionArray.length; i++) {
     randomPositionArray.push((Math.random() - 0.5) * 10);
   }
 
   // 여러개의 Plane Mesh 생성
+  const imagePanels = [];
   let imagePanel;
+  // 3씩 더해주는 이유는 배열이 x,y,z로 3개가 한 묶음처럼 처리되어 있음.
   for (let i = 0; i < spherePositionArray.length; i += 3) {
     imagePanel = new ImagePanel({
       textureLoader,
@@ -62,6 +65,8 @@ export default function example() {
       y: spherePositionArray[i + 1],
       z: spherePositionArray[i + 2],
     });
+
+    imagePanels.push(imagePanel);
   }
 
   // 그리기
@@ -84,13 +89,46 @@ export default function example() {
   }
 
   function setShape(e) {
+    let array;
     switch (e.target.dataset.type) {
       case 'random':
-        console.log('random');
+        array = randomPositionArray;
         break;
       case 'sphere':
-        console.log('sphere');
+        array = spherePositionArray;
         break;
+    }
+
+    // 위 배열에서 ImagePanel을 추가할 때 3의 배수씩 추가했기 때문에 *3을 해줘야함.
+    for (let i = 0; i < imagePanels.length; i++) {
+      gsap.to(imagePanels[i].mesh.position, {
+        duration: 2,
+        x: array[i * 3],
+        y: array[i * 3 + 1],
+        z: array[i * 3 + 2],
+      });
+    }
+
+    if (e.target.dataset.type === 'random') {
+      for (let i = 0; i < imagePanels.length; i++) {
+        gsap.to(imagePanels[i].mesh.rotation, {
+          duration: 2,
+          x: 0,
+          y: 0,
+          z: 0,
+        });
+      }
+    }
+
+    if (e.target.dataset.type === 'sphere') {
+      for (let i = 0; i < imagePanels.length; i++) {
+        gsap.to(imagePanels[i].mesh.rotation, {
+          duration: 2,
+          x: imagePanels[i].sphereRotationX,
+          y: imagePanels[i].sphereRotationY,
+          z: imagePanels[i].sphereRotationZ,
+        });
+      }
     }
   }
 

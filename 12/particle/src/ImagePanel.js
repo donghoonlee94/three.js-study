@@ -12,6 +12,11 @@ export class ImagePanel {
     this.mesh.position.set(info.x, info.y, info.z);
     this.mesh.lookAt(0, 0, 0);
 
+    // sphere 상태의 회전각을 저장
+    this.sphereRotationX = this.mesh.rotation.x;
+    this.sphereRotationY = this.mesh.rotation.y;
+    this.sphereRotationZ = this.mesh.rotation.z;
+
     info.scene.add(this.mesh);
   }
 }
