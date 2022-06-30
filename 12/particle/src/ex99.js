@@ -45,7 +45,7 @@ export default function example() {
   const ambientLight = new THREE.AmbientLight('white', 0.5);
   scene.add(ambientLight);
 
-  const directionalLight = new THREE.DirectionalLight('white', 100);
+  const directionalLight = new THREE.DirectionalLight('red', 100);
   directionalLight.position.x = 1;
   directionalLight.position.z = 2;
   scene.add(directionalLight);
@@ -58,45 +58,24 @@ export default function example() {
   controls.enableDamping = true;
 
   // Points
-  const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
+  const sphereGeometry = new THREE.SphereGeometry(15, 16, 16);
   const positionArray = sphereGeometry.attributes.position.array;
+  const group = new THREE.Group();
+  const coneGeometry = new THREE.ConeGeometry(5, 1, 3, 1);
 
-  const geometry = new THREE.BufferGeometry();
-
-  const textureLoader = new THREE.TextureLoader();
-  const particleTexture = textureLoader.load(
-    '/images/star_01.png',
-    (texture) => {
-      console.log(texture);
-    },
-    (progress) => {
-      console.log(progress);
-    }
-  );
-
-  const material = new THREE.PointsMaterial({
-    size: 0.3,
-    map: particleTexture,
-    transparent: true,
-    alphaMap: particleTexture,
-    depthWrite: false,
-    vertexColors: true,
-  });
-
-  console.log(particles);
-
-  const color = new Float32Array(positionArray.length);
+  let mesh;
   for (let i = 0; i < positionArray.length; i += 3) {
-    color[i] = Math.random();
-    color[i + 1] = Math.random();
-    color[i + 2] = Math.random();
+    mesh = new THREE.Mesh(coneGeometry, new THREE.MeshNormalMaterial());
+    mesh.position.x = positionArray[i];
+    mesh.position.y = positionArray[i + 1];
+    mesh.position.z = positionArray[i + 2];
+
+    mesh.lookAt(0, 0, 0);
+
+    group.add(mesh);
   }
 
-  geometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
-  geometry.setAttribute('color', new THREE.BufferAttribute(color, 3));
-  const particles = new THREE.Points(geometry, material);
-
-  scene.add(particles);
+  scene.add(group);
 
   // 그리기
   const clock = new THREE.Clock();
@@ -104,19 +83,17 @@ export default function example() {
   function draw() {
     const time = clock.getElapsedTime() * 10;
 
+    group.rotation.x += 0.0025;
+    group.rotation.y += 0.0025;
+
     controls.update();
-
-    // particles.rotation.x = time * 0.025;
-    // particles.rotation.y = time * 0.05;
-
-    // light.position.x = Math.cos(time * 0.2) * 5;
-    // light.position.z = Math.sin(time * 0.1) * 5;
-    // light.rotation.x = Math.cos(time * 0.2) * 5;
-    // light.rotation.y = Math.cos(time * 0.2) * 5;
 
     renderer.render(scene, camera);
     renderer.setAnimationLoop(draw);
   }
+
+  console.log(group.children.length * 3);
+  console.log(positionArray.length);
 
   function setSize() {
     camera.aspect = window.innerWidth / window.innerHeight;
