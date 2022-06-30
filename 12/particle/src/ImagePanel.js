@@ -9,7 +9,6 @@ export class ImagePanel {
     });
 
     this.mesh = new Mesh(info.geometry, material);
-    console.log(info.x, info.y, info.z);
     this.mesh.position.set(info.x, info.y, info.z);
     this.mesh.lookAt(0, 0, 0);
 
