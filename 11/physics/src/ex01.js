@@ -42,7 +42,24 @@ export default function example() {
   // Cannon
   const cannonWorld = new CANNON.World();
   cannonWorld.gravity.set(0, -10, 0);
-  console.log('cannonWorld', cannonWorld);
+
+  const floorShape = new CANNON.Plane();
+  const floorBody = new CANNON.Body({
+    mass: 0,
+    position: new CANNON.Vec3(0, 0, 0),
+    shape: floorShape,
+  });
+  floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI / 2);
+  cannonWorld.addBody(floorBody);
+
+  const boxShape = new CANNON.Box(new CANNON.Vec3(0.25, 2.5, 0.25));
+  const boxBody = new CANNON.Body({
+    mass: 1,
+    position: new CANNON.Vec3(0, 10, 0),
+    shape: boxShape,
+  });
+
+  cannonWorld.addBody(boxBody);
 
   // 바닥
   const floorMesh = new THREE.Mesh(
@@ -55,7 +72,7 @@ export default function example() {
   scene.add(floorMesh);
 
   // Mesh
-  const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+  const boxGeometry = new THREE.BoxGeometry(0.5, 5, 0.5);
   const boxMetarial = new THREE.MeshStandardMaterial({
     color: 'seagreen',
   });
@@ -68,6 +85,12 @@ export default function example() {
 
   function draw() {
     const delta = clock.getDelta();
+    let cannonStepTime = 1 / 60;
+    if (delta < 0.01) cannonStepTime = 1 / 120;
+    cannonWorld.step(cannonStepTime, delta, 3);
+
+    boxMesh.position.copy(boxBody.position); // 위치
+    boxMesh.quaternion.copy(boxBody.quaternion); // 회전
 
     renderer.render(scene, camera);
     renderer.setAnimationLoop(draw);
