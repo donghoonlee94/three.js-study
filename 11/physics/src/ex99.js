@@ -88,7 +88,7 @@ export default function example() {
         item.position.copy(sphereBodies[i].position); // 위치
         item.quaternion.copy(sphereBodies[i].quaternion); // 회전
 
-        if (item.position.y < 1) {
+        if (item.position.y < -10) {
           scene.remove(item);
           cannonWorld.removeBody(sphereBodies[i]);
           sphereBodies.splice(i, 1);
@@ -136,6 +136,9 @@ export default function example() {
       material: defaultMaterial,
     });
 
+    console.log(sphereBodies.length);
+    console.log(spheres.length);
+
     sphereBodies.push(sphereBody);
     spheres.push(sphereMesh);
     cannonWorld.addBody(sphereBody);
@@ -148,7 +151,7 @@ export default function example() {
     sphereBody.angularVelocity.z = 0;
   }
 
-  setInterval(spreadSphere, 100);
+  setInterval(spreadSphere, 75);
 
   // 이벤트
   window.addEventListener('resize', setSize);
