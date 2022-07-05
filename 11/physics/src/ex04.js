@@ -48,6 +48,9 @@ export default function example() {
   const cannonWorld = new CANNON.World();
   cannonWorld.gravity.set(0, -10, 0);
 
+  // Cannon 성능 세팅
+  cannonWorld.allowSleep = true;
+
   // Contact Material
   const defaultMaterial = new CANNON.Material('default');
   const defaultContactMaterial = new CANNON.ContactMaterial(defaultMaterial, defaultMaterial, {

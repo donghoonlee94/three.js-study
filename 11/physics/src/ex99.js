@@ -30,6 +30,14 @@ export default function example() {
   camera.position.z = 4;
   scene.add(camera);
 
+  // Helper
+
+  const size = 100;
+  const divisions = 100;
+
+  const gridHelper = new THREE.GridHelper(size, divisions);
+  scene.add(gridHelper);
+
   // Light
   const ambientLight = new THREE.AmbientLight('white', 0.5);
   scene.add(ambientLight);
@@ -46,6 +54,10 @@ export default function example() {
   // Cannon(물리 엔진)
   const cannonWorld = new CANNON.World();
   cannonWorld.gravity.set(0, -10, 0);
+
+  // 성능 최적화
+  cannonWorld.allowSleep = true; // body가 엄청 느려지면, 테스트 안 함
+  cannonWorld.broadphase = new CANNON.SAPBroadphase(cannonWorld); // 성능 조정.
 
   // Contact Material
   const defaultMaterial = new CANNON.Material('default');
@@ -87,6 +99,7 @@ export default function example() {
       if (item) {
         item.position.copy(sphereBodies[i].position); // 위치
         item.quaternion.copy(sphereBodies[i].quaternion); // 회전
+        item.rotation.x += 0.5;
 
         if (item.position.y < -10) {
           scene.remove(item);
@@ -124,10 +137,6 @@ export default function example() {
     const randomX = (Math.random() - 0.5) * 100;
     const randomZ = (Math.random() - 0.5) * 100;
     const randomRotationX = Math.PI / Math.ceil(Math.random() * 4);
-    const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    sphereMesh.castShadow = true;
-    sphereMesh.position.set(randomX, 20, randomZ);
-    sphereMesh.rotation.x = randomRotationX;
 
     const sphereBody = new CANNON.Body({
       mass: 5,
@@ -135,6 +144,9 @@ export default function example() {
       shape: sphereShape,
       material: defaultMaterial,
     });
+    const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+    sphereMesh.castShadow = true;
+    sphereMesh.position.set(randomX, 20, randomZ);
 
     console.log(sphereBodies.length);
     console.log(spheres.length);
@@ -151,7 +163,7 @@ export default function example() {
     sphereBody.angularVelocity.z = 0;
   }
 
-  setInterval(spreadSphere, 75);
+  setInterval(spreadSphere, 50);
 
   // 이벤트
   window.addEventListener('resize', setSize);
