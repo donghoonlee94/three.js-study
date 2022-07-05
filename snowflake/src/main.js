@@ -36,7 +36,7 @@ function addSnowFlakes() {
 
   const flakeMaterial = new THREE.PointsMaterial({
     size: Math.floor(Math.random() * 10 + 4),
-    map: textureLoader.load('./images/snowflake1.png'),
+    map: textureLoader.load('./images/snowflake2.png'),
     blending: THREE.AdditiveBlending,
     depthTest: false,
     transparent: true,
