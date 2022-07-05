@@ -108,6 +108,13 @@ export default function example() {
     if (delta < 0.01) cannonStepTime = 1 / 120;
     cannonWorld.step(cannonStepTime, delta, 3);
 
+    dominos.forEach((item) => {
+      if (item.cannonBody) {
+        item.modelMesh.position.copy(item.cannonBody.position);
+        item.modelMesh.quaternion.copy(item.cannonBody.quaternion);
+      }
+    });
+
     renderer.render(scene, camera);
     renderer.setAnimationLoop(draw);
   }
@@ -117,10 +124,6 @@ export default function example() {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.render(scene, camera);
-  }
-
-  function collide() {
-    // 내용...
   }
 
   // 이벤트
