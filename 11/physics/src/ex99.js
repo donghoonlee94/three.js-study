@@ -55,34 +55,22 @@ export default function example() {
   });
   cannonWorld.defaultContactMaterial = defaultContactMaterial;
 
-  const floorShape = new CANNON.Plane();
-  const floorBody = new CANNON.Body({
-    mass: 0,
-    position: new CANNON.Vec3(0, 0, 0),
-    shape: floorShape,
-    material: defaultMaterial,
-  });
-  floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI / 2);
-  cannonWorld.addBody(floorBody);
-
   const sphereShape = new CANNON.Sphere(0.1);
 
-  // Mesh
-  const floorMesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(10, 10),
-    new THREE.MeshStandardMaterial({
-      color: 'slategray',
-    })
-  );
-  floorMesh.rotation.x = -Math.PI / 2;
-  floorMesh.receiveShadow = true;
-  scene.add(floorMesh);
+  // Texture
 
+  const textureLoader = new THREE.TextureLoader();
+  const texture = textureLoader.load('./images/star_07.png');
+
+  // Mesh
   const spheres = [];
   const sphereBodies = [];
-  const sphereGeometry = new THREE.SphereGeometry(0.1);
+  const sphereGeometry = new THREE.PlaneGeometry(1, 1, 1, 1);
   const sphereMaterial = new THREE.MeshStandardMaterial({
     color: 'white',
+    map: texture,
+    side: THREE.DoubleSide,
+    transparent: true,
   });
 
   // 그리기
@@ -95,34 +83,30 @@ export default function example() {
     if (delta < 0.01) cannonStepTime = 1 / 120;
     cannonWorld.step(cannonStepTime, delta, 3);
 
-    // sphereBody.applyForce(new CANNON.Vec3(-0.1, 0, 0), sphereBody.position);
-    // sphereBody.applyLocalForce(new CANNON.Vec3(-0.1, 0, 0), sphereBody.position);
-    // sphereBody.applyImpulse(new CANNON.Vec3(-0.1, 0, 0), sphereBody.position);
-    // sphereBody.applyLocalImpulse(new CANNON.Vec3(-0.1, 0, 0), sphereBody.position);
-
-    // new CANNON.Vec3(
-    // 	-Math.cos(angle) * 4.5,
-    // 	1.55,
-    // 	-Math.sin(angle) * 4.5
-    // ),
-    // new CANNON.Vec3()
-
     spheres.forEach((item, i) => {
-      item.position.copy(sphereBodies[i].position); // 위치
-      item.quaternion.copy(sphereBodies[i].quaternion); // 회전
-      if (item.position.y < 1) {
-        scene.remove(item);
+      if (item) {
+        item.position.copy(sphereBodies[i].position); // 위치
+        item.quaternion.copy(sphereBodies[i].quaternion); // 회전
+
+        if (item.position.y < 1) {
+          scene.remove(item);
+          cannonWorld.removeBody(sphereBodies[i]);
+          sphereBodies.splice(i, 1);
+          spheres.splice(i, 1);
+        }
       }
     });
 
     // 속도 감소
     sphereBodies.forEach((item) => {
-      item.velocity.x *= 0.98;
-      item.velocity.y *= 0.98;
-      item.velocity.z *= 0.98;
-      item.angularVelocity.x *= 0.98;
-      item.angularVelocity.y *= 0.98;
-      item.angularVelocity.z *= 0.98;
+      if (item) {
+        item.velocity.x *= 0.98;
+        item.velocity.y *= 0.98;
+        item.velocity.z *= 0.98;
+        item.angularVelocity.x *= 0.98;
+        item.angularVelocity.y *= 0.98;
+        item.angularVelocity.z *= 0.98;
+      }
     });
 
     renderer.render(scene, camera);
@@ -136,17 +120,14 @@ export default function example() {
     renderer.render(scene, camera);
   }
 
-  const sphereCount = 5;
-
   function spreadSphere() {
-    const time = clock.getElapsedTime();
-    let reqID;
-
-    const randomX = (Math.random() - 0.5) * 50;
-    const randomZ = (Math.random() - 0.5) * 50;
+    const randomX = (Math.random() - 0.5) * 100;
+    const randomZ = (Math.random() - 0.5) * 100;
+    const randomRotationX = Math.PI / Math.ceil(Math.random() * 4);
     const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
     sphereMesh.castShadow = true;
     sphereMesh.position.set(randomX, 20, randomZ);
+    sphereMesh.rotation.x = randomRotationX;
 
     const sphereBody = new CANNON.Body({
       mass: 5,
@@ -165,10 +146,9 @@ export default function example() {
     sphereBody.angularVelocity.x = 0;
     sphereBody.angularVelocity.y = 0;
     sphereBody.angularVelocity.z = 0;
-    // sphereBody.applyForce(new CANNON.Vec3(0, 10000, 0), sphereBody.position);
   }
 
-  setInterval(spreadSphere, 50);
+  setInterval(spreadSphere, 100);
 
   // 이벤트
   window.addEventListener('resize', setSize);
