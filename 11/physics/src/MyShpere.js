@@ -1,7 +1,8 @@
-import { Body, Sphere, Vec3 } from 'cannon-es';
 import { Mesh } from 'three';
 
-export class MyShpere {
+import { Sphere, Body, Vec3 } from 'cannon-es';
+
+export class MySphere {
   constructor(info) {
     this.scene = info.scene;
     this.cannonWorld = info.cannonWorld;
