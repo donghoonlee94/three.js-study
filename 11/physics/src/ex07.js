@@ -59,8 +59,8 @@ export default function example() {
   // Contact Material
   const defaultMaterial = new CANNON.Material('default');
   const defaultContactMaterial = new CANNON.ContactMaterial(defaultMaterial, defaultMaterial, {
-    friction: 0.5,
-    restitution: 0.3,
+    friction: 0.01,
+    restitution: 0.9,
   });
   cannonWorld.defaultContactMaterial = defaultContactMaterial;
 
@@ -136,12 +136,15 @@ export default function example() {
     raycaster.setFromCamera(mouse, camera);
 
     const intersects = raycaster.intersectObjects(scene.children);
-    console.log(intersects[0].object.name);
+    if (intersects[0]?.object?.cannonBody) {
+      intersects[0]?.object?.cannonBody?.applyForce(new CANNON.Vec3(0, 0, -100), new CANNON.Vec3(0, 0, 0));
+    }
   }
 
   // 이벤트
   window.addEventListener('resize', setSize);
   canvas.addEventListener('click', (e) => {
+    if (preventDragClick.mouseMoved) return;
     console.log((e.clientX / canvas.clientWidth) * 2 - 1);
     // 마우스 0 지점을 가운데로 저장하는 로직
     mouse.x = (e.clientX / canvas.clientWidth) * 2 - 1;
