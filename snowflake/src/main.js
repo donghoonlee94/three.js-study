@@ -35,7 +35,7 @@ function addSnowFlakes() {
   geometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
 
   const flakeMaterial = new THREE.PointsMaterial({
-    size: 4,
+    size: Math.floor(Math.random() * 10 + 4),
     map: textureLoader.load('./images/snowflake1.png'),
     blending: THREE.AdditiveBlending,
     depthTest: false,
@@ -59,7 +59,7 @@ function updateParticles() {
     particles.geometry.attributes.position.array[i + 2] -= particles.geometry.attributes.velocity.array[i + 2];
 
     // check to see if below ground; if so, move to new starting x, y, z position
-    if (particles.geometry.attributes.position.array[i + 1] < 0) {
+    if (particles.geometry.attributes.position.array[i + 1] < -200) {
       particles.geometry.attributes.position.array[i] = Math.floor(Math.random() * maxRange - minRange); // x
       particles.geometry.attributes.position.array[i + 1] = Math.floor(Math.random() * minRange + minHeight); // y
       particles.geometry.attributes.position.array[i + 2] = Math.floor(Math.random() * maxRange - minRange); // z
