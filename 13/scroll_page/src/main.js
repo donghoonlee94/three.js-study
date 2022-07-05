@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { House } from './House';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import gsap from 'gsap';
 
 // ----- 주제: 스크롤에 따라 움직이는 3D 페이지
 
@@ -21,8 +22,7 @@ scene.background = new THREE.Color('white');
 
 // Camera
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.y = 1.5;
-camera.position.z = 4;
+camera.position.set(-5, 2, 25);
 scene.add(camera);
 
 // Light
@@ -47,16 +47,11 @@ floorMesh.receiveShadow = true;
 scene.add(floorMesh);
 
 const houses = [];
-houses.push(
-  new House({
-    gltfLoader,
-    scene,
-    modelSrc: './models/house.glb',
-    x: 0,
-    z: 0,
-    height: 2,
-  })
-);
+houses.push(new House({ gltfLoader, scene, modelSrc: '/models/house.glb', x: -5, z: 20, height: 2 }));
+houses.push(new House({ gltfLoader, scene, modelSrc: '/models/house.glb', x: 7, z: 10, height: 2 }));
+houses.push(new House({ gltfLoader, scene, modelSrc: '/models/house.glb', x: -10, z: 0, height: 2 }));
+houses.push(new House({ gltfLoader, scene, modelSrc: '/models/house.glb', x: 10, z: -10, height: 2 }));
+houses.push(new House({ gltfLoader, scene, modelSrc: '/models/house.glb', x: -5, z: -20, height: 2 }));
 
 // 그리기
 const clock = new THREE.Clock();
@@ -88,6 +83,13 @@ function throttle(callback, delayTime) {
   };
 }
 
+let scrollTop,
+  docHeight,
+  winHeight,
+  scrollPercent,
+  scrollPercentRounded,
+  text,
+  currentSection = 0;
 function animateScrollPercent() {
   scrollTop = window.scrollY;
   docHeight = document.body.offsetHeight;
@@ -98,9 +100,21 @@ function animateScrollPercent() {
   console.log(text);
 }
 
+function setSection() {
+  currentSection = Math.round(scrollTop / winHeight) || 0;
+
+  gsap.to(camera.position, {
+    duration: 1,
+    x: houses[currentSection].x,
+    z: houses[currentSection].z + 5,
+  });
+}
+
+window.scrollTo({ top: 0, behavior: 'auto' });
+
 // 이벤트
+window.addEventListener('scroll', throttle(setSection, 100));
 window.addEventListener('resize', setSize);
-let scrollTop, docHeight, winHeight, scrollPercent, scrollPercentRounded, text;
 window.addEventListener('scroll', throttle(animateScrollPercent, 100));
 
 draw();
